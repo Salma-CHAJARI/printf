@@ -111,6 +111,8 @@ int _putchar(char c);
 
 long int convert_size_number(long int num, int size);
 long int convert_size_unsgnd(unsigned long int num, int size);
+char *_memset(char *s, char b, unsigned int n);
+int _strlen(char *s);
 
 #endif /* MAIN_H */
 
