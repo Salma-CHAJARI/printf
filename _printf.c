@@ -1,50 +1,45 @@
 #include "main.h"
 /**
-*_printf - Custom printf function.
-*@format: The format string.
-*
-*Return: The number of characters printed.
-*/
-int _printf(const char *format, ...)
+ * _printf - function that selects the correct function to print.
+ * @format: identifier.
+ * Return: the length of the string.
+ */
+int _printf(const char * const format, ...)
 {
-va_list args;
-int i = 0, printed = 0;
-char buffer[BUFF_SIZE] = {0};
+	convert_match m[] = {
+		{"%s", printf_string}, {"%c", printf_char},
+		{"%%", printf_37},
+		{"%i", printf_int}, {"%d", printf_dec}, {"%r", printf_srev},
+		{"%R", printf_rot13}, {"%b", printf_bin}, {"%u", printf_unsigned},
+		{"%o", printf_oct}, {"%x", printf_hex}, {"%X", printf_HEX},
+		{"%S", printf_exclusive_string}, {"%p", printf_pointer}
+	};
 
-va_start(args, format);
+	va_list args;
+	int i = 0, j, lenght = 0;
 
-while (format && format[i])
-{
-if (format[i] == '%')
-{
-i++;
-int flags = get_flags(format, &i);
-int width = get_width(format, &i, args);
-int precision = get_precision(format, &i, args);
-int size = get_size(format, &i);
+	va_start(args, format);
+	if (format == NULL || (format[0] == '%' && format[1] == '\0'))
+		return (-1);
 
-int result = handle_print(format, &i, args, buffer,  flags, width,
-precision, size);
-if (result == -1)
-{
-va_end(args);
-return (-1);
-}
-printed += result;
-}
-else
-{
-printed += handle_write_char(format[i], buffer, 0, 0, 0, 0);
-i++;
-}
-}
-
-if (buffer[0] != '\0')
-{
-printed += write(1, buffer, _strlen(buffer));
-_memset(buffer, 0, BUFF_SIZE);
-}
-
-va_end(args);
-return (printed);
+start:
+	while (format[i] != '\0')
+	{
+		j = 13;
+		while (j >= 0)
+		{
+			if (m[j].id[0] == format[i] && m[j].id[1] == format[i + 1])
+			{
+				lenght += m[j].f(args);
+				i = i + 2;
+				goto start;
+			}
+			j--;
+		}
+		_putchar(format[i]);
+		lenght++;
+		i++;
+	}
+	va_end(args);
+	return (lenght);
 }
