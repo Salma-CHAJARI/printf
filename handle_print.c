@@ -3,7 +3,7 @@
 /**
  * handle_print - Handles the printing of formatted data to a buffer.
  * @fmt: The format string.
- * @i: Pointer to the current position in the format string.
+ * @ind: Pointer to the current position in the format string.
  * @list: The va_list of arguments.
  * @buffer: The buffer to write to.
  * @flags: Formatting flags.
