@@ -12,10 +12,10 @@
  * @size: Size specifier (e.g., short or long).
  * Return: Number of chars written to the buffer.
  */
-int handle_print(const char *fmt, int *i, va_list list, char buffer[],
+int handle_print(const char *fmt, int *ind, va_list list, char buffer[],
 		int flags, int width, int precision, int size)
 {
-	int i, unknowlen = 0, print_char = -1;
+	int i, unknowlen = 0, print_chars = -1;
 	fmt_t fmt_types[] = {
 		{'c', print_char}, {'s', print_string}, {'%', print_percent},
 		{'i', print_int}, {'d', print_int}, {'b', print_binary},
@@ -46,6 +46,6 @@ int handle_print(const char *fmt, int *i, va_list list, char buffer[],
 		unknowlen += write(1, &fmt[*ind], 1);
 		return (unknowlen);
 	}
-	return (printed_char);
+	return (print_chars);
 
 }
