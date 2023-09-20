@@ -12,14 +12,10 @@
  */
 
 int print_char(va_list types, char buffer[],
-		int flags, int width, int precision, int size)
+	int flags, int width, int precision, int size)
 {
 	char c = va_arg(types, int);
 
-	UNUSED(flags);
-	UNUSED(width);
-	UNUSED(precision);
-	UNUSED(size);
-
-	return (handle_write_char(c, buffer, 0, 0, 0, 0));
+	return (handle_write_char(c, buffer, flags, width, precision, size));
 }
+

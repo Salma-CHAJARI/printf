@@ -1,45 +1,61 @@
 #include "main.h"
+
+void print_buffer(char buffer[], int *buff_ind);
+
 /**
- * _printf - function that selects the correct function to print.
- * @format: identifier.
- * Return: the length of the string.
+ * print_buffer - Prints content of the buffer.
+ * @buffer: Array of chars
+ * @buff_ind: Index at which to add next char.
  */
-int _printf(const char * const format, ...)
+void print_buffer(char buffer[], int *buff_ind)
 {
-	convert_match m[] = {
-		{"%s", printf_string}, {"%c", printf_char},
-		{"%%", printf_37},
-		{"%i", printf_int}, {"%d", printf_dec}, {"%r", printf_srev},
-		{"%R", printf_rot13}, {"%b", printf_bin}, {"%u", printf_unsigned},
-		{"%o", printf_oct}, {"%x", printf_hex}, {"%X", printf_HEX},
-		{"%S", printf_exclusive_string}, {"%p", printf_pointer}
-	};
+	if (*buff_ind > 0)
+		write(1, &buffer[0], *buff_ind);
 
-	va_list args;
-	int i = 0, j, lenght = 0;
-
-	va_start(args, format);
-	if (format == NULL || (format[0] == '%' && format[1] == '\0'))
-		return (-1);
-
-start:
-	while (format[i] != '\0')
-	{
-		j = 13;
-		while (j >= 0)
-		{
-			if (m[j].id[0] == format[i] && m[j].id[1] == format[i + 1])
-			{
-				lenght += m[j].f(args);
-				i = i + 2;
-				goto start;
-			}
-			j--;
-		}
-		_putchar(format[i]);
-		lenght++;
-		i++;
-	}
-	va_end(args);
-	return (lenght);
+	*buff_ind = 0;
 }
+
+/**
+ * _printf - Printf function
+ * @format: format.
+ * Return: Printed chars.
+ */
+int _printf(const char *format, ...)
+{
+	int i, print = 0, printed_char = 0;
+	int flags, width, precision, size, buff_ind = 0;
+	va_list list;
+	char buffer[BUFF_SIZE];
+
+	if (format == NULL)
+		return (-1);
+	va_start(list, format);
+	for (i = 0; format && format[i] != '\0'; i++)
+	{
+		if (format[i] != '%')
+		{
+			buffer[buff_ind++] = format[i];
+			if (buff_ind == BUFF_SIZE)
+				print_buffer(buffer, &buff_ind);
+			printed_char++;
+		}
+		else
+		{
+			print_buffer(buffer, &buff_ind);
+			flags = get_flags(format, &i);
+			width = get_width(format, &i, list);
+			precision = get_precision(format, &i, list);
+			size = get_size(format, &i);
+			++i;
+			print = handle_print(format, &i, list, buffer,
+				flags, width, precision, size);
+			if (print == -1)
+				return (-1);
+			printed_char += print;
+		}
+	}
+	print_buffer(buffer, &buff_ind);
+	va_end(list);
+	return (printed_char);
+}
+

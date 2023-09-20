@@ -14,14 +14,45 @@
 int print_string(va_list types, char buffer[],
 	int flags, int width, int precision, int size)
 {
+	nt len = 0, i;
 	char *str = va_arg(types, char *);
-	int nbr_print = 0;
 
+	UNUSED(buffer);
+	UNUSED(flags);
+	UNUSED(width);
+	UNUSED(precision);
+	UNUSED(size);
 	if (str == NULL)
+	{
 		str = "(null)";
-	do {
-		nbr_print += handle_write_char(*str, buffer, 0, 0, 0, 0);
-		str++;
-	} while (*str)
-	return (nbr_print);
+		if (precision >= 6)
+			str = "      ";
+	}
+
+	while (str[len] != '\0')
+		len++;
+
+	if (precision >= 0 && precision < len)
+		len = precision;
+
+	if (width > len)
+	{
+		if (flags & F_MINUS)
+		{
+			write(1, &str[0], len);
+			for (i = width - len; i > 0; i--)
+				write(1, " ", 1);
+			return (width);
+		}
+		else
+		{
+			for (i = width - len; i > 0; i--)
+				write(1, " ", 1);
+			write(1, &str[0], len);
+			return (width);
+		}
+	}
+
+	return (write(1, str, len));
+
 }
